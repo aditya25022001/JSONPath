@@ -1,0 +1,17 @@
+name : Sync tags from upstream
+on : 
+  workflow_dispatch
+jobs :
+  sync-tags:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout your repo
+        uses: actions/checkout@v3
+      
+      - name: Add upstream and fetch tags
+        run: |
+          git config --global user.email "adityaubale63@gmail.com"
+          git config --global user.name "Aditya Ubale"
+          git remote add upstream https://github.com/JSONPath-Plus/JSONPath.git
+          git fetch upstream --tags
+          git push origin --tags
