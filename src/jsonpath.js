@@ -288,6 +288,73 @@ JSONPath.prototype.evaluate = function (
 
 // PRIVATE METHODS
 
+function validatePathExpression(exprString) {
+    const lowerExpr = exprString.toString().toLowerCase();
+    const forbiddenPatterns = [
+        'process',
+        'require',
+        'constructor',
+        '__proto__',
+        'function(',
+        'global',
+        'globalthis',
+        'module',
+        'exports',
+        '{',
+        '}',
+        'eval(',
+        'child_process',
+        'spawn',
+        'import ',
+        'fs',
+        'vm',
+        'net',
+        'ipc',
+        'ipcrenderer',
+        'ipcmain',
+        'exec',
+        'execfile',
+        'windowscript',
+        'powershell',
+        'wscript',
+        'cscript',
+        '__defineGetter__',
+        '__defineSetter__',
+        'defineProperty',
+        'getPrototypeOf',
+        'sys',
+        'os',
+        'call',
+        'apply',
+        'bind',
+        'execSync',
+        'toString',
+        'Function',
+        'setTimeout',
+        'setInterval',
+        'vm.runInNewContext',
+        'mainModule',
+        'fromCharCode',
+        'argv',
+        'syscall',
+        'insert',
+        'delete',
+        'replace',
+        'splice',
+        'slice',
+    ];
+
+    // If any forbidden token/pattern is found, return false to block
+    for (const pattern of forbiddenPatterns) {
+        if (lowerExpr.includes(pattern.toLowerCase())) {
+            return false;
+        }
+    }
+
+    // Passed all checks — consider it safe for further minimal handling
+    return true;
+}
+
 JSONPath.prototype._getPreferredOutput = function (ea) {
     const resultType = this.currResultType;
     switch (resultType) {
@@ -351,6 +418,9 @@ JSONPath.prototype._trace = function (
         };
         this._handleCallback(retObj, callback, 'value');
         return retObj;
+    }
+    if(expr.find(e => validatePathExpression(e)===false)){
+        throw new Error('Potentially malicious path expression blocked.');
     }
 
     const loc = expr[0], x = expr.slice(1);
@@ -650,6 +720,9 @@ JSONPath.prototype._eval = function (
             .replace(/@([.\s)[])/gu, '_$_v$1');
         if (containsPath) {
             script = script.replace(/@path/gu, '_$_path');
+        }
+        if (!validatePathExpression(script)) {
+            throw new Error('Potentially malicious path expression blocked.');
         }
         if (
             this.currEval === 'safe' ||
