@@ -74,6 +74,7 @@
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
+    "@stylistic/eslint-plugin": "^1.6.3",
     "c8": "^9.1.0",
     "chai": "^5.1.0",
     "coveradge": "^0.8.2",
