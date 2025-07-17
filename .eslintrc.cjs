@@ -106,6 +106,7 @@ module.exports = {
 
         // Reenable when no longer having problems
         'unicorn/no-unsafe-regex': 0,
-        'unicorn/consistent-destructuring': 0
+        'unicorn/consistent-destructuring': 0,
+        '@stylistic/linebreak-style': 'off'
     }
 };
